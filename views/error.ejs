@@ -1,0 +1,11 @@
+<%- include('partials/header', { title: title }) %>
+<%- include('partials/sidebar', { active: '' }) %>
+
+<div class="page-head">
+  <h1 class="h3 mb-0"><%= heading %></h1>
+</div>
+
+<div class="alert alert-danger"><%= message %></div>
+<a href="/" class="btn btn-primary">Back to Dashboard</a>
+
+<%- include('partials/footer') %>

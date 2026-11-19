@@ -1,0 +1,41 @@
+<%- include('partials/header', { title: 'Register Member' }) %>
+<%- include('partials/sidebar', { active: 'members' }) %>
+
+<div class="page-head">
+  <h1 class="h3 mb-0">Register New Member</h1>
+  <a href="/members" class="btn btn-outline-secondary">Back to Members</a>
+</div>
+
+<% if (error) { %>
+  <div class="alert alert-danger"><%= error %></div>
+<% } %>
+
+<div class="card form-card">
+  <div class="card-body">
+    <form method="POST" action="/members/add" class="row g-3">
+      <div class="col-12">
+        <label for="name" class="form-label">Full Name</label>
+        <input type="text" id="name" name="name" class="form-control" maxlength="100" required
+               value="<%= old.name || '' %>">
+      </div>
+      <div class="col-md-6">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" id="email" name="email" class="form-control" maxlength="120" required
+               value="<%= old.email || '' %>">
+      </div>
+      <div class="col-md-6">
+        <label for="phone" class="form-label">Phone Number</label>
+        <input type="text" id="phone" name="phone" class="form-control" required
+               pattern="[0-9]{10}" maxlength="10" placeholder="10 digits"
+               value="<%= old.phone || '' %>">
+      </div>
+      <div class="col-12">
+        <div class="form-text mb-2">The registration date is set automatically to today.</div>
+        <button type="submit" class="btn btn-primary">Register Member</button>
+        <a href="/members" class="btn btn-outline-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

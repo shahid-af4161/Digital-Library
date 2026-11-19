@@ -1,0 +1,137 @@
+<%- include('partials/header', { title: 'Borrow / Return' }) %>
+<%- include('partials/sidebar', { active: 'borrow' }) %>
+
+<div class="page-head">
+  <h1 class="h3 mb-0">Borrow / Return</h1>
+  <span class="text-muted">Loan period: <%= loanDays %> days &middot; Fine: <%= money(finePerDay) %> per overdue day</span>
+</div>
+
+<!-- Issue form -->
+<div class="card mb-4">
+  <div class="card-header"><strong>Issue a Book</strong></div>
+  <div class="card-body">
+    <% if (members.length === 0 || books.length === 0) { %>
+      <div class="alert alert-warning mb-0">
+        You need at least one <a href="/members/add">member</a> and one <a href="/books/add">book</a> before issuing.
+      </div>
+    <% } else { %>
+      <form method="POST" action="/borrow/issue" class="row g-3 align-items-end">
+        <div class="col-md-5">
+          <label for="member_id" class="form-label">Member</label>
+          <select id="member_id" name="member_id" class="form-select" required>
+            <option value="">-- Select member --</option>
+            <% members.forEach(function (m) { %>
+              <option value="<%= m.member_id %>"><%= m.name %> (ID <%= m.member_id %>)</option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="col-md-5">
+          <label for="book_id" class="form-label">Book</label>
+          <select id="book_id" name="book_id" class="form-select" required>
+            <option value="">-- Select book --</option>
+            <% books.forEach(function (b) { %>
+              <option value="<%= b.book_id %>" <%= b.available_copies < 1 ? 'disabled' : '' %>>
+                <%= b.title %> (<%= b.available_copies < 1 ? 'none available' : b.available_copies + ' available' %>)
+              </option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100">Issue Book</button>
+        </div>
+      </form>
+      <div class="form-text mt-2">Issue date is today; the due date is set automatically.</div>
+    <% } %>
+  </div>
+</div>
+
+<!-- Currently borrowed -->
+<div class="card mb-4">
+  <div class="card-header"><strong>Currently Borrowed Books</strong> <span class="badge bg-primary"><%= current.length %></span></div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Member</th>
+          <th>Book</th>
+          <th>Issued</th>
+          <th>Due</th>
+          <th>Days Held</th>
+          <th>Status</th>
+          <th>Fine So Far</th>
+          <th class="text-end">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (current.length === 0) { %>
+          <tr><td colspan="8" class="text-center text-muted py-4">No books are currently borrowed.</td></tr>
+        <% } %>
+        <% current.forEach(function (r) { %>
+          <tr>
+            <td><%= r.member_name %></td>
+            <td><%= r.title %></td>
+            <td><%= r.issue_date %></td>
+            <td><%= r.due_date %></td>
+            <td><%= r.days_held %></td>
+            <td>
+              <span class="badge bg-<%= statusClass(r.status) %>"><%= r.status %></span>
+              <% if (r.status === 'Overdue') { %>
+                <small class="text-danger"><%= r.days_overdue %> day(s) late</small>
+              <% } else { %>
+                <small class="text-muted"><%= r.days_left %> day(s) left</small>
+              <% } %>
+            </td>
+            <td><%= money(r.days_overdue * finePerDay) %></td>
+            <td class="text-end">
+              <form method="POST" action="/borrow/return" class="d-inline"
+                    data-confirm="Mark &quot;<%= r.title %>&quot; as returned by <%= r.member_name %>?">
+                <input type="hidden" name="member_id" value="<%= r.member_id %>">
+                <input type="hidden" name="book_id" value="<%= r.book_id %>">
+                <input type="hidden" name="issue_date" value="<%= r.issue_date %>">
+                <button type="submit" class="btn btn-sm btn-success">Return</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- All records -->
+<div class="card">
+  <div class="card-header"><strong>All Borrowing Records</strong> <span class="badge bg-secondary"><%= all.length %></span></div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Member</th>
+          <th>Book</th>
+          <th>Issued</th>
+          <th>Due</th>
+          <th>Returned</th>
+          <th>Days Kept</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (all.length === 0) { %>
+          <tr><td colspan="7" class="text-center text-muted py-4">No borrowing records yet.</td></tr>
+        <% } %>
+        <% all.forEach(function (r) { %>
+          <tr>
+            <td><%= r.member_name %></td>
+            <td><%= r.title %></td>
+            <td><%= r.issue_date %></td>
+            <td><%= r.due_date %></td>
+            <td><%= r.return_date || '-' %></td>
+            <td><%= r.days_kept %></td>
+            <td><span class="badge bg-<%= statusClass(r.status) %>"><%= r.status %></span></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

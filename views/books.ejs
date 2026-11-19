@@ -1,0 +1,62 @@
+<%- include('partials/header', { title: 'Books' }) %>
+<%- include('partials/sidebar', { active: 'books' }) %>
+
+<div class="page-head">
+  <h1 class="h3 mb-0">Books</h1>
+  <a href="/books/add" class="btn btn-primary">+ Add Book</a>
+</div>
+
+<form class="row g-2 mb-3" method="GET" action="/books">
+  <div class="col-12 col-md-6 col-lg-5">
+    <input type="text" name="q" value="<%= q %>" class="form-control" placeholder="Search by title, author or ISBN">
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-outline-primary">Search</button>
+    <% if (q) { %><a href="/books" class="btn btn-outline-secondary">Clear</a><% } %>
+  </div>
+</form>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Title</th>
+          <th>Author</th>
+          <th>ISBN</th>
+          <th>Category</th>
+          <th>Year</th>
+          <th>Available</th>
+          <th class="text-end">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (books.length === 0) { %>
+          <tr><td colspan="8" class="text-center text-muted py-4">No books found.</td></tr>
+        <% } %>
+        <% books.forEach(function (b) { %>
+          <tr>
+            <td><%= b.book_id %></td>
+            <td><%= b.title %></td>
+            <td><%= b.author_name %></td>
+            <td><%= b.isbn %></td>
+            <td><span class="badge bg-secondary"><%= b.category %></span></td>
+            <td><%= b.publication_year %></td>
+            <td>
+              <span class="badge bg-<%= b.available_copies > 0 ? 'success' : 'danger' %>"><%= b.available_copies %></span>
+            </td>
+            <td class="text-end">
+              <form method="POST" action="/books/delete/<%= b.book_id %>" class="d-inline"
+                    data-confirm="Delete the book &quot;<%= b.title %>&quot;?">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

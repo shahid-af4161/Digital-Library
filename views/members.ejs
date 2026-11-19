@@ -1,0 +1,62 @@
+<%- include('partials/header', { title: 'Members' }) %>
+<%- include('partials/sidebar', { active: 'members' }) %>
+
+<div class="page-head">
+  <h1 class="h3 mb-0">Members</h1>
+  <a href="/members/add" class="btn btn-primary">+ Register Member</a>
+</div>
+
+<form class="row g-2 mb-3" method="GET" action="/members">
+  <div class="col-12 col-md-6 col-lg-5">
+    <input type="text" name="q" value="<%= q %>" class="form-control" placeholder="Search by name, email or phone">
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-outline-primary">Search</button>
+    <% if (q) { %><a href="/members" class="btn btn-outline-secondary">Clear</a><% } %>
+  </div>
+</form>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Registered</th>
+          <th>Member For</th>
+          <th>Active Loans</th>
+          <th class="text-end">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (members.length === 0) { %>
+          <tr><td colspan="8" class="text-center text-muted py-4">No members found.</td></tr>
+        <% } %>
+        <% members.forEach(function (m) { %>
+          <tr>
+            <td><%= m.member_id %></td>
+            <td><%= m.name %></td>
+            <td><%= m.email %></td>
+            <td><%= m.phone %></td>
+            <td><%= m.registration_date %></td>
+            <td><%= m.months_registered %> month(s)</td>
+            <td>
+              <span class="badge bg-<%= m.active_loans > 0 ? 'primary' : 'secondary' %>"><%= m.active_loans %></span>
+            </td>
+            <td class="text-end">
+              <form method="POST" action="/members/delete/<%= m.member_id %>" class="d-inline"
+                    data-confirm="Delete the member &quot;<%= m.name %>&quot;? Their returned borrowing history will also be removed.">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

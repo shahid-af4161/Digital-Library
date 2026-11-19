@@ -1,0 +1,24 @@
+<%# Navigation sidebar. It also opens the <main> area and shows the success/error message. %>
+<nav class="sidebar collapse d-md-flex flex-column" id="sidebarMenu">
+  <div class="sidebar-brand">
+    <div class="fs-5 fw-bold">📖 Digital Library</div>
+    <small>E-Book Rental Ledger</small>
+  </div>
+  <ul class="nav flex-column sidebar-links">
+    <li class="nav-item"><a class="nav-link <%= locals.active === 'dashboard' ? 'active' : '' %>" href="/">📊 Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link <%= locals.active === 'books' ? 'active' : '' %>" href="/books">📚 Books</a></li>
+    <li class="nav-item"><a class="nav-link <%= locals.active === 'authors' ? 'active' : '' %>" href="/authors">✍️ Authors</a></li>
+    <li class="nav-item"><a class="nav-link <%= locals.active === 'members' ? 'active' : '' %>" href="/members">👥 Members</a></li>
+    <li class="nav-item"><a class="nav-link <%= locals.active === 'borrow' ? 'active' : '' %>" href="/borrow">🔄 Borrow / Return</a></li>
+    <li class="nav-item"><a class="nav-link <%= locals.active === 'fines' ? 'active' : '' %>" href="/fines">💰 Fines</a></li>
+  </ul>
+  <div class="sidebar-footer mt-auto">DBMS Project</div>
+</nav>
+
+<main class="content">
+<% if (locals.flash) { %>
+  <div class="alert alert-<%= flash.type %> alert-dismissible fade show" role="alert">
+    <%= flash.text %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>

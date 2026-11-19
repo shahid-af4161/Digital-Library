@@ -1,0 +1,152 @@
+/* public/css/style.css - small custom styles on top of Bootstrap 5 */
+
+:root {
+  --sidebar-bg: #1f2a44;
+  --sidebar-text: #c9d3ea;
+  --accent: #3b5bdb;
+  --page-bg: #f4f6fb;
+}
+
+body {
+  background: var(--page-bg);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* ---------- layout ---------- */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.content {
+  flex: 1;
+  min-width: 0; /* lets wide tables scroll instead of stretching the page */
+  padding: 1.5rem;
+}
+
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ---------- sidebar ---------- */
+.sidebar {
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  width: 240px;
+  flex: 0 0 240px;
+  padding: 1.25rem 0.75rem;
+}
+
+.sidebar-brand {
+  color: #fff;
+  padding: 0 0.75rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  margin-bottom: 1rem;
+}
+
+.sidebar-brand small {
+  color: var(--sidebar-text);
+}
+
+.sidebar-links .nav-link {
+  color: var(--sidebar-text);
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 0.2rem;
+}
+
+.sidebar-links .nav-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.sidebar-links .nav-link.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.sidebar-footer {
+  padding: 1rem 0.75rem 0;
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+/* top bar shown on phones only */
+.topbar {
+  background: var(--sidebar-bg);
+  color: #fff;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* On desktop the sidebar stays in place while the page scrolls */
+@media (min-width: 768px) {
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+}
+
+/* On phones the layout stacks: menu on top, content below */
+@media (max-width: 767.98px) {
+  .layout {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    flex: none;
+  }
+  .content {
+    padding: 1rem;
+  }
+}
+
+/* ---------- cards ---------- */
+.card {
+  border: 0;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.08);
+}
+
+.card-header {
+  background: #fff;
+}
+
+.stat-card {
+  border-left: 5px solid var(--accent);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+}
+
+.stat-value {
+  font-size: 1.9rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.stat-blue   { border-left-color: #3b5bdb; }
+.stat-green  { border-left-color: #2f9e44; }
+.stat-purple { border-left-color: #7048e8; }
+.stat-red    { border-left-color: #e03131; }
+.stat-orange { border-left-color: #f08c00; }
+
+.form-card {
+  max-width: 760px;
+}
+
+.table th {
+  white-space: nowrap;
+}

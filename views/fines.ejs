@@ -1,0 +1,158 @@
+<%- include('partials/header', { title: 'Fines' }) %>
+<%- include('partials/sidebar', { active: 'fines' }) %>
+
+<div class="page-head">
+  <h1 class="h3 mb-0">Fines</h1>
+  <span class="text-muted">Rate: <%= money(finePerDay) %> per overdue day</span>
+</div>
+
+<!-- Summary cards -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card stat-card stat-blue h-100"><div class="card-body">
+      <div class="stat-label">Total Fines Recorded</div>
+      <div class="stat-value"><%= money(totals.total) %></div>
+    </div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card stat-card stat-orange h-100"><div class="card-body">
+      <div class="stat-label">Unpaid</div>
+      <div class="stat-value"><%= money(totals.unpaid) %></div>
+    </div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card stat-card stat-green h-100"><div class="card-body">
+      <div class="stat-label">Paid</div>
+      <div class="stat-value"><%= money(totals.paid) %></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- Member-wise fines -->
+<div class="card mb-4">
+  <div class="card-header"><strong>Member-wise Fines</strong>
+    <small class="text-muted">(total calculated by the stored function get_total_fines)</small>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Member</th>
+          <th>Email</th>
+          <th>Total Fines</th>
+          <th>Unpaid</th>
+          <th>Paid</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (memberFines.length === 0) { %>
+          <tr><td colspan="5" class="text-center text-muted py-4">No member has any fines.</td></tr>
+        <% } %>
+        <% memberFines.forEach(function (m) { %>
+          <tr>
+            <td><%= m.name %> <small class="text-muted">(ID <%= m.member_id %>)</small></td>
+            <td><%= m.email %></td>
+            <td class="fw-semibold"><%= money(m.total_fines) %></td>
+            <td class="<%= Number(m.unpaid) > 0 ? 'text-danger fw-semibold' : '' %>"><%= money(m.unpaid) %></td>
+            <td class="text-success"><%= money(m.paid) %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Individual fine records -->
+<div class="card mb-4">
+  <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <strong>Fine Records</strong>
+    <div class="btn-group btn-group-sm" role="group" aria-label="Filter fines">
+      <a href="/fines" class="btn btn-outline-secondary <%= status === '' ? 'active' : '' %>">All</a>
+      <a href="/fines?status=Unpaid" class="btn btn-outline-secondary <%= status === 'Unpaid' ? 'active' : '' %>">Unpaid</a>
+      <a href="/fines?status=Paid" class="btn btn-outline-secondary <%= status === 'Paid' ? 'active' : '' %>">Paid</a>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Member</th>
+          <th>Book</th>
+          <th>Due</th>
+          <th>Returned</th>
+          <th>Days Late</th>
+          <th>Fine</th>
+          <th>Status</th>
+          <th class="text-end">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (fines.length === 0) { %>
+          <tr><td colspan="8" class="text-center text-muted py-4">No fine records found.</td></tr>
+        <% } %>
+        <% fines.forEach(function (f) { %>
+          <tr>
+            <td><%= f.member_name %></td>
+            <td><%= f.title %></td>
+            <td><%= f.due_date %></td>
+            <td><%= f.return_date || '-' %></td>
+            <td><%= f.overdue_days %></td>
+            <td class="fw-semibold"><%= money(f.fine_amount) %></td>
+            <td>
+              <span class="badge bg-<%= statusClass(f.status) %>"><%= f.status %></span>
+              <% if (f.paid_date) { %><small class="text-muted">on <%= f.paid_date %></small><% } %>
+            </td>
+            <td class="text-end">
+              <% if (f.status === 'Unpaid') { %>
+                <form method="POST" action="/fines/pay/<%= f.fine_id %>" class="d-inline"
+                      data-confirm="Mark this fine of <%= money(f.fine_amount) %> as paid?">
+                  <button type="submit" class="btn btn-sm btn-success">Mark Paid</button>
+                </form>
+              <% } else { %>
+                <span class="text-muted">-</span>
+              <% } %>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Overdue and not yet returned -->
+<div class="card">
+  <div class="card-header"><strong>Overdue Books Not Yet Returned</strong>
+    <small class="text-muted">(fine is recorded when the book is returned)</small>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Member</th>
+          <th>Book</th>
+          <th>Issued</th>
+          <th>Due</th>
+          <th>Days Overdue</th>
+          <th>Fine So Far</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (overdue.length === 0) { %>
+          <tr><td colspan="6" class="text-center text-muted py-4">No overdue books right now.</td></tr>
+        <% } %>
+        <% overdue.forEach(function (o) { %>
+          <tr>
+            <td><%= o.member_name %></td>
+            <td><%= o.title %></td>
+            <td><%= o.issue_date %></td>
+            <td><%= o.due_date %></td>
+            <td><span class="badge bg-danger"><%= o.days_overdue %></span></td>
+            <td class="text-danger fw-semibold"><%= money(o.days_overdue * finePerDay) %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

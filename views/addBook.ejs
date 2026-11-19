@@ -1,0 +1,64 @@
+<%- include('partials/header', { title: 'Add Book' }) %>
+<%- include('partials/sidebar', { active: 'books' }) %>
+
+<div class="page-head">
+  <h1 class="h3 mb-0">Add New Book</h1>
+  <a href="/books" class="btn btn-outline-secondary">Back to Books</a>
+</div>
+
+<% if (error) { %>
+  <div class="alert alert-danger"><%= error %></div>
+<% } %>
+
+<% if (authors.length === 0) { %>
+  <div class="alert alert-warning">
+    There are no authors yet. <a href="/authors">Add an author first</a>, then come back to add the book.
+  </div>
+<% } else { %>
+  <div class="card form-card">
+    <div class="card-body">
+      <form method="POST" action="/books/add" class="row g-3">
+        <div class="col-12">
+          <label for="title" class="form-label">Title</label>
+          <input type="text" id="title" name="title" class="form-control" maxlength="200" required
+                 value="<%= old.title || '' %>">
+        </div>
+        <div class="col-md-6">
+          <label for="author_id" class="form-label">Author</label>
+          <select id="author_id" name="author_id" class="form-select" required>
+            <option value="">-- Select author --</option>
+            <% authors.forEach(function (a) { %>
+              <option value="<%= a.author_id %>" <%= String(old.author_id) === String(a.author_id) ? 'selected' : '' %>><%= a.name %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label for="isbn" class="form-label">ISBN</label>
+          <input type="text" id="isbn" name="isbn" class="form-control" maxlength="20" required
+                 placeholder="10 or 13 digits" value="<%= old.isbn || '' %>">
+        </div>
+        <div class="col-md-4">
+          <label for="category" class="form-label">Category</label>
+          <input type="text" id="category" name="category" class="form-control" maxlength="50" required
+                 placeholder="e.g. Fiction" value="<%= old.category || '' %>">
+        </div>
+        <div class="col-md-4">
+          <label for="publication_year" class="form-label">Publication Year</label>
+          <input type="number" id="publication_year" name="publication_year" class="form-control"
+                 min="1000" max="2100" required value="<%= old.publication_year || '' %>">
+        </div>
+        <div class="col-md-4">
+          <label for="available_copies" class="form-label">Available Copies</label>
+          <input type="number" id="available_copies" name="available_copies" class="form-control"
+                 min="1" max="1000" required value="<%= old.available_copies || '1' %>">
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary">Save Book</button>
+          <a href="/books" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+<% } %>
+
+<%- include('partials/footer') %>

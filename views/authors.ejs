@@ -1,0 +1,65 @@
+<%- include('partials/header', { title: 'Authors' }) %>
+<%- include('partials/sidebar', { active: 'authors' }) %>
+
+<div class="page-head">
+  <h1 class="h3 mb-0">Authors</h1>
+  <span class="text-muted">Books are linked to authors through a foreign key</span>
+</div>
+
+<% if (error) { %>
+  <div class="alert alert-danger"><%= error %></div>
+<% } %>
+
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header"><strong>Add Author</strong></div>
+      <div class="card-body">
+        <form method="POST" action="/authors/add">
+          <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" id="name" name="name" class="form-control" maxlength="100" required
+                   value="<%= old.name || '' %>">
+          </div>
+          <div class="mb-3">
+            <label for="biography" class="form-label">Biography</label>
+            <textarea id="biography" name="biography" class="form-control" rows="4" maxlength="2000"><%= old.biography || '' %></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Save Author</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Biography</th>
+              <th>Books</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (authors.length === 0) { %>
+              <tr><td colspan="4" class="text-center text-muted py-4">No authors yet.</td></tr>
+            <% } %>
+            <% authors.forEach(function (a) { %>
+              <tr>
+                <td><%= a.author_id %></td>
+                <td class="fw-semibold"><%= a.name %></td>
+                <td class="text-muted small"><%= a.biography || '-' %></td>
+                <td><span class="badge bg-primary"><%= a.book_count %></span></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
